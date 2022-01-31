@@ -10,6 +10,9 @@ set(CMAKE_CXX_STANDARD 17)
 pico_sdk_init()
 
 add_executable(shell
+  common/application.cc
+  common/logger.cc
+  common/shell.cc
   main.cc
 )
 

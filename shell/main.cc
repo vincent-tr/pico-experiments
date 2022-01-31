@@ -6,6 +6,17 @@
 #include <vector>
 #include "pico/stdlib.h"
 
+class non_copyable {
+protected:
+  constexpr non_copyable() = default;
+  constexpr non_copyable(non_copyable&&) = default;
+  ~non_copyable() = default;
+  non_copyable& operator=(non_copyable&&) = default;
+
+  non_copyable(const non_copyable&) = delete;
+  non_copyable& operator=(const non_copyable&) = delete;
+};
+
 class service {
 public:
   virtual ~service() = default;
@@ -142,6 +153,10 @@ class logger : public service {
 public:
   enum class level { debug, info, error };
 
+  logger() {
+    s_instance = this;
+  }
+
   virtual ~logger() = default;
 
   virtual void setup() override {
@@ -189,11 +204,70 @@ public:
     });
   }
 
+  class log_stream final : private non_copyable, public std::ostream {
+  public:
+    log_stream(std::streambuf *sb, const std::string &name, level lvl)
+     : std::ostream(sb) {
+      auto &os = (*this);
+
+      switch (lvl) {
+      case level::debug:
+        os << "[debug]";
+        break;
+
+      case level::info:
+        os << "[info]";
+        break;
+
+      case level::error:
+        os << "[error]";
+        break;
+      }
+
+      os << " " << name << " - ";
+    }
+
+    virtual ~log_stream() {
+      (*this) << std::endl;
+    }
+  };
+
+  log_stream append(const std::string &name, level lvl) {
+    auto sb = lvl >= m_level ? std::cout.rdbuf() : &null_streambuf::s_instance;
+    return log_stream(sb, name, lvl);
+  }
+
+  // faster than through application
+  static logger *instance() {
+    assert(s_instance);
+    return s_instance;
+  }
+
 private:
+  class null_streambuf : public std::streambuf {
+  public:
+    int overflow(int c) {
+      return c;
+    }
+
+    static null_streambuf s_instance;
+  };
+
+  static logger *s_instance;
   level m_level = level::error;
 };
 
+#define LOG(lvl) logger::instance()->append(logger_name, lvl)
+#define DEBUG LOG(logger::level::debug)
+#define INFO LOG(logger::level::info)
+#define ERROR LOG(logger::level::error)
+
+logger* logger::s_instance = nullptr;
+logger::null_streambuf logger::null_streambuf::s_instance;
+
 int main() {
+  auto logger_name = "main";
+
   stdio_init_all();
 
   application::init();
@@ -202,6 +276,13 @@ int main() {
 
   app->register_service("shell", new shell());
   app->register_service("logger", new logger());
+
+  auto *sh = static_cast<shell *>(app->get_service("shell"));
+  sh->register_command("test-log", [&](const std::vector<std::string> & args) {
+    DEBUG << "debug msg";
+    INFO << "info msg";
+    ERROR << "error msg" << 42;
+  });
 
   app->setup();
 

@@ -17,8 +17,49 @@ public:
   }
 };
 
-static inline bool ends_with(const std::string_view  & value, const std::string_view  & ending)
-{
+class application {
+  application() = default;
+
+public:
+  void register_service(const std::string_view &name, service *svc) {
+    m_services.emplace(name, svc);
+  }
+
+  service *get_service(const std::string_view &name) {
+    auto it = m_services.find(name);
+    assert(it != m_services.end());
+    return it->second;
+  }
+
+
+  void setup() {
+    for (const auto &[name, svc] : m_services) {
+      svc->setup();
+    }
+  }
+
+  void loop() {
+    for (const auto &[name, svc] : m_services) {
+      svc->loop();
+    }
+  }
+
+  static application* instance() {
+    return s_instance;
+  }
+
+  static void init() {
+    s_instance = new application();
+  }
+
+private:
+  static application *s_instance;
+  std::unordered_map<std::string_view, service *> m_services;
+};
+
+application *application::s_instance = nullptr;
+
+static inline bool ends_with(const std::string_view &value, const std::string_view &ending) {
   if (ending.size() > value.size()) {
     return false;
   }
@@ -32,7 +73,16 @@ public:
 
   virtual ~shell() = default;
 
-  virtual void loop() {
+  virtual void setup() override {
+    register_command("help", [&](const std::vector<std::string> & args) {
+      std::cout << "Commands are:" << std::endl;
+      for (const auto & [name, handler] : m_handlers) {
+        std::cout << name << std::endl;
+      }
+    });
+  }
+
+  virtual void loop() override {
     int value = getchar_timeout_us(0);
     if (value == PICO_ERROR_TIMEOUT) {
       return;
@@ -88,20 +138,75 @@ private:
   std::string m_current_line;
 };
 
+class logger : public service {
+public:
+  enum class level { debug, info, error };
+
+  virtual ~logger() = default;
+
+  virtual void setup() override {
+    auto *sh = static_cast<shell *>(application::instance()->get_service("shell"));
+
+    sh->register_command("logger-level-get", [&](const std::vector<std::string> & args) {
+      std::cout << "Current logger level is '";
+
+      switch (m_level) {
+      case level::debug:
+        std::cout << "debug";
+        break;
+
+      case level::info:
+        std::cout << "info";
+        break;
+
+      case level::error:
+        std::cout << "error";
+        break;
+      }
+
+      std::cout << "'" << std::endl;
+    });
+
+    sh->register_command("logger-level-set", [&](const std::vector<std::string> & args) {
+      if (args.size() < 1) {
+        std::cout << "No level provided." << std::endl;
+      }
+
+      const auto &slevel = args.front();
+
+      if (slevel == "debug") {
+        m_level = level::debug;
+        std::cout << "Logger level set to  'debug'" << std::endl;
+      } else if (slevel == "info") {
+        m_level = level::info;
+        std::cout << "Logger level set to  'info'" << std::endl;
+      } else if (slevel == "error") {
+        m_level = level::error;
+        std::cout << "Logger level set to  'error'" << std::endl;
+      } else {
+        std::cout << "Invalid level provided '" << slevel << "'" << std::endl;
+      }
+    });
+  }
+
+private:
+  level m_level = level::error;
+};
+
 int main() {
   stdio_init_all();
 
-  shell s;
-  s.setup();
+  application::init();
 
-  s.register_command("hello", [](const std::vector<std::string> & args) {
-    std::cout << "hello !" << std::endl;
-    for (const auto & arg : args) {
-      std::cout << "arg: " << arg << std::endl;
-    }
-  });
+  auto app = application::instance();
+
+  app->register_service("shell", new shell());
+  app->register_service("logger", new logger());
+
+  app->setup();
 
   while(1) {
-    s.loop();
+    app->loop();
   }
+
 }

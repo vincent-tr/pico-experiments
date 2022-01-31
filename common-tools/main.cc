@@ -206,7 +206,7 @@ public:
 
   class log_stream final : private non_copyable, public std::ostream {
   public:
-    log_stream(std::streambuf *sb, const std::string &name, level lvl)
+    log_stream(std::streambuf *sb, const std::string_view &name, level lvl)
      : std::ostream(sb) {
       auto &os = (*this);
 
@@ -232,7 +232,7 @@ public:
     }
   };
 
-  log_stream append(const std::string &name, level lvl) {
+  log_stream append(const std::string_view &name, level lvl) {
     auto sb = lvl >= m_level ? std::cout.rdbuf() : &null_streambuf::s_instance;
     return log_stream(sb, name, lvl);
   }

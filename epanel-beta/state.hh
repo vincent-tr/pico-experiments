@@ -13,8 +13,11 @@ namespace mylife {
 
     void set_input(uint8_t index, bool value);
     bool get_input(uint8_t index) const;
+    uint16_t get_inputs() const;
     void set_output(uint8_t index, uint8_t value);
     uint8_t get_output(uint8_t index) const;
+
+    void reset();
 
   private:
     uint16_t m_inputs = 0;

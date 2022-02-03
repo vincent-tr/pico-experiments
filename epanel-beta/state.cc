@@ -90,16 +90,28 @@ namespace mylife {
     return (m_inputs >> index) & ((uint16_t)1);
   }
 
+  uint16_t state::get_inputs() const {
+    return m_inputs;
+  }
+
   void state::set_output(uint8_t index, uint8_t value) {
     assert(index >= 0 && index < 16);
     m_outputs[index] = value;
     
-    DEBUG << "set output " << static_cast<uint32_t>(index) << " = " << static_cast<uint32_t>(get_output(index)) << std::endl;
+    DEBUG << "set output " << static_cast<uint32_t>(index) << " = " << static_cast<uint32_t>(get_output(index));
   }
 
   uint8_t state::get_output(uint8_t index) const {
     assert(index >= 0 && index < 16);
     return m_outputs[index];
   }
+
+  void state::reset() {
+    for (int index=0; index<16; ++index) {
+      set_input(index, false);
+      set_output(index, 0);
+    }
+  }
+
 }
 

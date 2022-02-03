@@ -3,6 +3,7 @@
 #include "common/shell.hh"
 #include "common/logger.hh"
 #include "state.hh"
+#include "com.hh"
 
 int main() {
   auto logger_name = "main";
@@ -16,6 +17,7 @@ int main() {
   app->register_service("shell", new mylife::shell());
   app->register_service("logger", new mylife::logger());
   app->register_service("state", new mylife::state());
+  app->register_service("com", new mylife::com(0x01));
 
   app->setup();
 

@@ -14,10 +14,11 @@ add_executable(epanel-beta
   common/logger.cc
   common/shell.cc
   state.cc
+  com.cc
   main.cc
 )
 
 pico_enable_stdio_usb(epanel-beta 1)
 pico_enable_stdio_uart(epanel-beta 0)
 pico_add_extra_outputs(epanel-beta)
-target_link_libraries(epanel-beta pico_stdlib)
+target_link_libraries(epanel-beta pico_stdlib hardware_i2c)

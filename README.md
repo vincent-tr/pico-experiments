@@ -1,5 +1,8 @@
 # pico-experiments
 
+## Build deps
+- build ~/workspace/pico_i2c_slave
+
 ## Build
 
 - cd <dir>

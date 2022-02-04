@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <array>
+#include <functional>
 #include "common/service.hh"
 
 namespace mylife {
@@ -19,9 +20,12 @@ namespace mylife {
 
     void reset();
 
+    void register_inputs_change_callback(std::function<void()> callback);
+
   private:
     uint16_t m_inputs = 0;
     std::array<uint8_t, 16> m_outputs = {0};
+    std::vector<std::function<void()>> m_callbacks;
   };
 
 }

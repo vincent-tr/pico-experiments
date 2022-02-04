@@ -20,6 +20,8 @@ namespace mylife {
     void init_transaction(uint8_t reg);
     void finish_transaction();
 
+    void inputs_changed();
+
     static com *s_instance;
     state *m_state = nullptr;
     uint8_t m_address;

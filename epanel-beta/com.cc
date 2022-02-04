@@ -10,6 +10,7 @@
 namespace mylife {
   static auto logger_name = "com";
 
+  static constexpr uint intr_pin = 3;
   static constexpr uint sda_pin = 4; // PICO_DEFAULT_I2C_SDA_PIN;
   static constexpr uint scl_pin = 5; // PICO_DEFAULT_I2C_SCL_PIN;
   static constexpr uint baudrate = 50000; // 50 kHz
@@ -77,8 +78,21 @@ namespace mylife {
     s_instance = this;
   }
 
+  static void gpio_opendrain_init(uint gpio) {
+    // emulate open drain: input for value=false, output-low for value=true
+    gpio_init(gpio);
+    gpio_set_dir(gpio, false);
+    gpio_put(gpio, false);
+  }
+
+  static void gpio_opendrain_put(uint gpio, bool value) {
+    gpio_set_dir(gpio, value);
+  }
+
   void com::setup() {
     m_state = static_cast<state *>(application::instance()->get_service("state"));
+    
+    gpio_opendrain_init(intr_pin);
 
     gpio_init(sda_pin);
     gpio_set_function(sda_pin, GPIO_FUNC_I2C);
@@ -90,6 +104,8 @@ namespace mylife {
 
     i2c_init(i2c0, baudrate);
     i2c_slave_init(i2c0, m_address, &i2c_handler_s);
+
+    m_state->register_inputs_change_callback([&]() { inputs_changed(); });
   }
 
   void com::i2c_handler_s(i2c_inst_t *i2c, i2c_slave_event_t event) {
@@ -143,6 +159,8 @@ namespace mylife {
 
       case reg_inputs:
         m_transaction->set_value(m_state->get_inputs());
+        // reset interrupt line
+        gpio_opendrain_put(intr_pin, false);
         break;
 
       case reg_reset:
@@ -176,5 +194,10 @@ namespace mylife {
 
     delete m_transaction;
     m_transaction = nullptr;
+  }
+
+  void com::inputs_changed() {
+    // set interrupt line on change
+    gpio_opendrain_put(intr_pin, true);
   }
 }

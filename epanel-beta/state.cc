@@ -82,6 +82,10 @@ namespace mylife {
       m_inputs &= ~(((uint16_t)1) << index);
     }
 
+    for (const auto &callback : m_callbacks) {
+      callback();
+    }
+
     DEBUG << "set input " << static_cast<uint32_t>(index) << " = " << get_input(index);
   }
 
@@ -108,10 +112,14 @@ namespace mylife {
 
   void state::reset() {
     for (int index=0; index<16; ++index) {
-      set_input(index, false);
-      set_output(index, 0);
+      m_outputs[index] = 0;
     }
+
+    DEBUG << "reset";
   }
 
+  void state::register_inputs_change_callback(std::function<void()> callback) {
+    m_callbacks.emplace_back(std::move(callback));
+  }
 }
 

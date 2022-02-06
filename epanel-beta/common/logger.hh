@@ -11,7 +11,7 @@ namespace mylife {
 
   class logger : public service {
   public:
-    enum class level { debug, info, error };
+    enum class level { debug, info, error, none };
 
     class log_stream final : private non_copyable, public std::ostream {
     public:
@@ -35,7 +35,7 @@ namespace mylife {
     class null_streambuf;
 
     static logger *s_instance;
-    level m_level = level::error;
+    level m_level = level::none;
   };
 
 }

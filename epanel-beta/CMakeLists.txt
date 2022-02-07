@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 include(pico_sdk_import.cmake)
-add_subdirectory(../../pico_i2c_slave/i2c_slave ../../pico_i2c_slave/i2c_slave/build)
+add_subdirectory(../../pico_i2c_slave/i2c_slave i2c_slave)
 
 project(test_project C CXX ASM)
 

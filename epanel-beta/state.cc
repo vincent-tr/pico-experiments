@@ -54,7 +54,7 @@ namespace mylife {
       }
     });
 
-    sh->register_command("state-outputs-set", [&](const std::vector<std::string> & args) {
+    sh->register_command("state-output-set", [&](const std::vector<std::string> & args) {
       if (args.size() < 2) {
         output_set_help();
         return;

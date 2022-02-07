@@ -27,6 +27,10 @@ namespace mylife {
       case level::error:
         std::cout << "error";
         break;
+
+      case level::none:
+        std::cout << "none";
+        break;
       }
 
       std::cout << "'" << std::endl;
@@ -41,13 +45,16 @@ namespace mylife {
 
       if (slevel == "debug") {
         m_level = level::debug;
-        std::cout << "Logger level set to  'debug'" << std::endl;
+        std::cout << "Logger level set to 'debug'" << std::endl;
       } else if (slevel == "info") {
         m_level = level::info;
-        std::cout << "Logger level set to  'info'" << std::endl;
+        std::cout << "Logger level set to 'info'" << std::endl;
       } else if (slevel == "error") {
         m_level = level::error;
-        std::cout << "Logger level set to  'error'" << std::endl;
+        std::cout << "Logger level set to 'error'" << std::endl;
+      } else if (slevel == "none") {
+        m_level = level::none;
+        std::cout << "Logger level set to 'none'" << std::endl;
       } else {
         std::cout << "Invalid level provided '" << slevel << "'" << std::endl;
       }

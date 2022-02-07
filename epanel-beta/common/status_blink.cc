@@ -19,7 +19,7 @@ namespace mylife {
     gpio_put(led_pin, m_next_value ? 1 : 0);
 
     m_next_value = !m_next_value;
-    m_next_time = delayed_by_ms(m_next_time, 250);
+    m_next_time = delayed_by_ms(m_next_time, m_next_value ? 1000 : 250);
   }
 
 }

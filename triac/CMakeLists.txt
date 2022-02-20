@@ -11,6 +11,7 @@ pico_sdk_init()
 
 add_executable(triac
   main.cc
+  zc.cc
 )
 
 # pico_generate_pio_header(pio ${CMAKE_CURRENT_LIST_DIR}/hello.pio)

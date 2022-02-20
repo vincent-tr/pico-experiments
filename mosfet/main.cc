@@ -7,7 +7,7 @@
 #include "pico/time.h"
 
 #define GPIO_ZC 13 // green
-#define GPIO_MOSFET 14 // yellow
+#define GPIO_TRIAC 14 // yellow
 #define GPIO_MOSFET 15 // orange
 
 int main() {

@@ -9,13 +9,13 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
 
-add_executable(triac
+add_executable(mosfet
   main.cc
 )
 
 # pico_generate_pio_header(pio ${CMAKE_CURRENT_LIST_DIR}/hello.pio)
 
-pico_enable_stdio_usb(triac 1)
-pico_enable_stdio_uart(triac 0)
-pico_add_extra_outputs(triac)
-target_link_libraries(triac pico_stdlib hardware_pio)
+pico_enable_stdio_usb(mosfet 1)
+pico_enable_stdio_uart(mosfet 0)
+pico_add_extra_outputs(mosfet)
+target_link_libraries(mosfet pico_stdlib hardware_pio)

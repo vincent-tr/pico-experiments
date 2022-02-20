@@ -9,13 +9,13 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
 
-add_executable(pio
-  main.c
+add_executable(zc
+  main.cc
 )
 
 # pico_generate_pio_header(pio ${CMAKE_CURRENT_LIST_DIR}/hello.pio)
 
-pico_enable_stdio_usb(pio 1)
-pico_enable_stdio_uart(pio 0)
-pico_add_extra_outputs(pio)
-target_link_libraries(pio pico_stdlib hardware_pio)
+pico_enable_stdio_usb(zc 1)
+pico_enable_stdio_uart(zc 0)
+pico_add_extra_outputs(zc)
+target_link_libraries(zc pico_stdlib hardware_pio)

@@ -1,0 +1,14 @@
+rising_per_sec: 100 Hz, low: 9462 us, hi: 541
+rising_per_sec: 100 Hz, low: 9460 us, hi: 543
+rising_per_sec: 100 Hz, low: 9461 us, hi: 541
+rising_per_sec: 100 Hz, low: 9462 us, hi: 540
+rising_per_sec: 100 Hz, low: 9463 us, hi: 540
+rising_per_sec: 100 Hz, low: 9464 us, hi: 539
+rising_per_sec: 100 Hz, low: 9464 us, hi: 540
+rising_per_sec: 100 Hz, low: 9462 us, hi: 542
+rising_per_sec: 100 Hz, low: 9461 us, hi: 543
+rising_per_sec: 100 Hz, low: 9460 us, hi: 544
+rising_per_sec: 100 Hz, low: 9462 us, hi: 542
+rising_per_sec: 100 Hz, low: 9464 us, hi: 541
+rising_per_sec: 99 Hz, low: 9463 us, hi: 542
+rising_per_sec: 100 Hz, low: 9462 us, hi: 543

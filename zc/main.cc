@@ -35,6 +35,8 @@ public:
   zero_crossing_detector(uint gpio) {
     m_instance = this;
 
+    alarm_pool_init_default();
+
     gpio_init(gpio);
     gpio_set_dir(gpio, GPIO_IN);
 
@@ -63,6 +65,9 @@ private:
     switch(events) {
     case GPIO_IRQ_EDGE_RISE:
       m_period = m_zero_duration + elapsed;
+
+      // middle of zero
+      add_alarm_in_us(m_zero_duration / 2, s_alarm_trigger, this, true);
       break;
 
     case GPIO_IRQ_EDGE_FALL:
@@ -71,8 +76,18 @@ private:
     }
   }
 
+  void alarm_trigger() {
+    m_callback.call();
+  }
+
   static void s_irq_handler(uint gpio, uint32_t events) {
     m_instance->irq_handler(events);
+  }
+
+  static int64_t s_alarm_trigger(alarm_id_t id, void *user_data) {
+    auto instance = reinterpret_cast<zero_crossing_detector *>(user_data);
+    instance->alarm_trigger();
+    return 0;
   }
 
   // this is ugly but we cannot pass args to irq handler
@@ -99,12 +114,21 @@ int main() {
 
   zero_crossing_detector zc(GPIO_ZC);
 
+  absolute_time_t ABSOLUTE_TIME_INITIALIZED_VAR(last_ts, 0);
+  int64_t cb_period = 0;
+
+  zc.register_callback([&]() {
+    auto now = get_absolute_time();
+    cb_period = absolute_time_diff_us(last_ts, now);
+    last_ts = now;
+  });
+
   bool led_state = false;
 
   while(true) {
     sleep_ms(1000);
 
-    std::cout << "period: " << zc.period_us() << " us, zero duration: " << zc.zero_duration_us() << std::endl;
+    std::cout << "period: " << zc.period_us() << " us, zero duration: " << zc.zero_duration_us() << "us, cb period: " << cb_period << "us" << std::endl;
 
     gpio_put(PICO_DEFAULT_LED_PIN, led_state ? 1 : 0);
     led_state = !led_state;

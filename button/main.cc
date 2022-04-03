@@ -32,7 +32,6 @@ int main() {
 
   gpio_init(GPIO_BUTTON);
   gpio_set_dir(GPIO_BUTTON, GPIO_IN);
-  // gpio_set_irq_enabled(GPIO_BUTTON, GPIO_IRQ_LEVEL_LOW | GPIO_IRQ_LEVEL_HIGH | GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, false);
 
   // signal reboot
   for (int i=0; i<5; ++i) {

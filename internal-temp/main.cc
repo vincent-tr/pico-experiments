@@ -2,7 +2,7 @@
 #include <array>
 #include <functional>
 #include "pico/stdlib.h"
-#include "hardware/gpio.h"
+#include "hardware/adc.h"
 #include "pico/binary_info.h"
 #include "pico/time.h"
 
